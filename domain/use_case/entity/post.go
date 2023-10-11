@@ -24,3 +24,11 @@ func NewPost(title, message string, user User) *Post {
 func (post *Post) AddComment(comment Comment) {
 	post.Comments = append(post.Comments, comment)
 }
+
+func (post *Post) GetType() string {
+	return "post"
+}
+
+func (post *Post) GetID() uuid.UUID {
+	return post.PostID
+}

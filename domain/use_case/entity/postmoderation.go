@@ -5,17 +5,25 @@ import (
 )
 
 type PostModeration struct {
-	PostID       uuid.UUID `json:"post_id"`
-	ModerationID User      `json:"moderation_id"`
-	UserID       User      `json:"user_id"`
-	State        bool      `json:"state"`
+	PostModerationID uuid.UUID `json:"post_id"`
+	ModerationID     User      `json:"moderation_id"`
+	UserID           User      `json:"user_id"`
+	State            bool      `json:"state"`
 }
 
 func NewPostModeration(user, moderation User, state bool) *PostModeration {
 	return &PostModeration{
-		PostID:       uuid.New(),
-		UserID:       user,
-		ModerationID: moderation,
-		State:        state,
+		PostModerationID: uuid.New(),
+		UserID:           user,
+		ModerationID:     moderation,
+		State:            state,
 	}
+}
+
+func (moderation *PostModeration) GetType() string {
+	return "post_moderation"
+}
+
+func (moderation *PostModeration) GetID() uuid.UUID {
+	return moderation.PostModerationID
 }

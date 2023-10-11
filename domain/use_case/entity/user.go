@@ -19,3 +19,11 @@ func NewUser(email, password, fullname string) *User {
 		FullName: fullname,
 	}
 }
+
+func (user *User) GetType() string {
+	return "user"
+}
+
+func (user *User) GetID() uuid.UUID {
+	return user.UserID
+}

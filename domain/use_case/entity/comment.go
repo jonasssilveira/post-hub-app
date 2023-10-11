@@ -17,3 +17,11 @@ func NewComment(user User, message string) *Comment {
 		Message:   message,
 	}
 }
+
+func (comment *Comment) GetType() string {
+	return "comment"
+}
+
+func (comment *Comment) GetID() uuid.UUID {
+	return comment.CommentID
+}
