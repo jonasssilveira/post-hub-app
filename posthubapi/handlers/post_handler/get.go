@@ -1,41 +1,44 @@
 package handlers
 
 import (
-	"PostHubApp/domain/use_case/entity"
 	"PostHubApp/domain/use_case/repository"
-	"PostHubApp/posthubapi/handlers/error_handler"
+	errorshandler "PostHubApp/posthubapi/handlers/errorshandle"
 	"encoding/json"
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 )
 
-type ApiGet[T entity.Post] struct {
-	db repository.DB[T]
+type ApiGet struct {
+	db repository.DB
 }
 
-func NewApiGet[T entity.Post](repo repository.DB[T]) *ApiGet[T] {
-	return &ApiGet[T]{
+func NewApiGet(repo repository.DB) *ApiGet {
+	return &ApiGet{
 		db: repo,
 	}
 }
 
-func (api *ApiGet[T]) Handler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id := vars["id"]
+func (api *ApiGet) Handler(c *gin.Context) error {
 
-	post, err := json.Marshal(api.db.Get(id))
+	id, _ := strconv.ParseUint(c.Param("id"), 10, 32)
+
+	getPost, err := api.db.Get(c, id)
 
 	if err != nil {
-		apiError := &error_handler.ApiError{
+		return err
+	}
+
+	post, err := json.Marshal(getPost)
+
+	if err != nil {
+		return &errorshandler.ApiErrorNotFound{
 			Code:    http.StatusNotFound,
 			Message: "Resource not found",
 		}
-
-		http.Error(w, apiError.Message, apiError.Code)
-		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-	w.Write(post)
-
+	c.Writer.WriteHeader(http.StatusCreated)
+	c.Writer.Write(post)
+	return nil
 }

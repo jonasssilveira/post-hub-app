@@ -2,10 +2,11 @@ package repository
 
 import (
 	"PostHubApp/domain/use_case/entity"
+	"context"
 )
 
-type DB[T entity.Migrations] interface {
-	Get(id string) T
-	FindAll(dbOptions ...DBOptions) []T
-	Merge(object T) error
+type DB interface {
+	Get(ctx context.Context, id uint64) (entity.Migrations, error)
+	FindAll(ctx context.Context, dbOptions ...*DBOptions) ([]entity.Migrations, error)
+	Merge(ctx context.Context, object entity.Migrations) error
 }

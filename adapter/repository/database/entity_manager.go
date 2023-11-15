@@ -2,41 +2,39 @@ package database
 
 import (
 	"PostHubApp/domain/use_case/entity"
+	"PostHubApp/domain/use_case/repository"
 	"context"
+	"errors"
 	"gorm.io/gorm"
 	"log"
 )
 
-type EntityManager[T entity.Migrations] struct {
+type EntityManager struct {
 	db *gorm.DB
 }
 
-func NewEntityManager[T entity.Migrations](db *gorm.DB) *EntityManager[T] {
-	return &EntityManager[T]{db: db}
+func NewEntityManager(db *gorm.DB) *EntityManager {
+	return &EntityManager{db: db}
 }
 
-func (em *EntityManager[T]) Merge(ctx context.Context, migrated T) error {
+func (em *EntityManager) Merge(ctx context.Context, migrated entity.Migrations) error {
 
-	all, err := em.FindAll(ctx)
+	found, err := em.Get(ctx, migrated.GetID())
 
 	if err != nil {
 		return err
 	}
-	var result *gorm.DB
-	if all != nil {
-		result = em.db.WithContext(ctx).
-			Table(migrated.GetType()).
-			Create(&migrated)
-	}
 
-	if result.Error != nil {
-		log.Fatal("an error ocured to save data, error " + result.Error.Error())
+	if found.GetID() == 0 {
+		return em.db.Create(migrated).Error
+	} else {
+		return em.update(migrated, ctx)
 	}
 
 }
 
-func (em *EntityManager[T]) FindAll(ctx context.Context) ([]T, error) {
-	var migratedFound []T
+func (em *EntityManager) FindAll(ctx context.Context, dbOptions ...*repository.DBOptions) ([]entity.Migrations, error) {
+	var migratedFound []entity.Migrations
 
 	updateResult := em.db.WithContext(ctx).Find(&migratedFound)
 
@@ -49,5 +47,39 @@ func (em *EntityManager[T]) FindAll(ctx context.Context) ([]T, error) {
 		return nil, nil
 	}
 	return migratedFound, nil
+
+}
+
+func (em *EntityManager) Get(ctx context.Context, id uint64) (entity.Migrations, error) {
+	migratedFound := new(entity.Post)
+
+	err := em.db.WithContext(ctx).First(&migratedFound).Where("id = ?", id).Error
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return *migratedFound, nil
+		} else {
+			return *migratedFound, err
+		}
+
+	}
+	return *migratedFound, nil
+}
+
+func (em *EntityManager) update(found entity.Migrations, ctx context.Context) error {
+	var result *gorm.DB
+	if result.Error != nil {
+		log.Fatal("an error occurred to save data, error " + result.Error.Error())
+		return errors.New("generic error for now")
+	}
+
+	if found != nil {
+		result = em.db.WithContext(ctx).
+			Table(found.GetType()).
+			Create(&found)
+		return nil
+	} else {
+		return errors.New("generic error for now")
+	}
 
 }

@@ -3,49 +3,55 @@ package handlers
 import (
 	"PostHubApp/domain/use_case/entity"
 	"PostHubApp/domain/use_case/repository"
-	"PostHubApp/posthubapi/handlers/error_handler"
+	"PostHubApp/posthubapi/handlers/errorshandle"
 	"encoding/json"
+	"github.com/gin-gonic/gin"
 	"io"
 	"net/http"
 )
 
 type ApiSave struct {
-	db repository.DB[entity.Post]
+	db repository.DB
 }
 
-func NewApiSave(repo repository.DB[entity.Post]) *ApiSave {
+func NewApiSave(repo repository.DB) *ApiSave {
 	return &ApiSave{
 		db: repo,
 	}
 }
 
-func (api *ApiSave) Handler(w http.ResponseWriter, r *http.Request) {
+func (api *ApiSave) Handler(c *gin.Context) error {
 
-	readBody, err := io.ReadAll(r.Body)
+	readBody, err := io.ReadAll(c.Request.Body)
 
 	if err != nil {
-		apiError := &error_handler.ApiError{
+		apiError := &errorshandler.ApiErrorNotFound{
 			Code:    http.StatusNotFound,
 			Message: err.Error(),
 		}
 
-		http.Error(w, apiError.Message, apiError.Code)
-		return
+		return apiError
 	}
-	var post entity.Post
+	var post *entity.Post
 
-	if err = json.Unmarshal(readBody, &post); err != nil {
-		apiError := &error_handler.ApiError{
+	if err = json.Unmarshal(readBody, post); err != nil {
+		apiError := &errorshandler.ApiErrorNotFound{
 			Code:    http.StatusNotFound,
 			Message: err.Error(),
 		}
-
-		http.Error(w, apiError.Message, apiError.Code)
-		return
+		return apiError
 	}
 
-	api.db.Merge(post)
+	err = api.db.Merge(c, post)
+	if err != nil {
+		apiError := &errorshandler.ApiErrorNotFound{
+			Code:    http.StatusNotFound,
+			Message: "it was not possible save or update",
+		}
 
-	w.WriteHeader(http.StatusCreated)
+		http.Error(c.Writer, apiError.Message, apiError.Code)
+	}
 
+	c.Writer.WriteHeader(http.StatusCreated)
+	return nil
 }

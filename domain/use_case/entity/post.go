@@ -1,34 +1,29 @@
 package entity
 
-import (
-	"github.com/google/uuid"
-)
-
 type Post struct {
-	PostID   uuid.UUID `json:"post_id"`
-	Title    string    `json:"title"`
-	Message  string    `json:"message"`
-	User     User      `json:"user"`
-	Comments []Comment `json:"comments"`
+	PostID       uint64 `gorm:"primaryKey;autoIncrement"`
+	Title        string `json:"title"`
+	Message      string `json:"message"`
+	UserID       uint64 `json:"user_id"`
+	ModerationID uint64 `json:"moderation_id"`
 }
 
 func NewPost(title, message string, user User) *Post {
 	return &Post{
-		PostID:  uuid.New(),
 		Title:   title,
 		Message: message,
-		User:    user,
 	}
 }
 
-func (post *Post) AddComment(comment Comment) {
-	post.Comments = append(post.Comments, comment)
-}
-
-func (post *Post) GetType() string {
+func (post Post) GetType() string {
 	return "post"
 }
 
-func (post *Post) GetID() uuid.UUID {
+func (post Post) GetID() uint64 {
 	return post.PostID
+}
+
+// TableName specifies the table name for the Post model
+func (Post) TableName() string {
+	return "post" // Set the table name to match the actual table name in your database
 }

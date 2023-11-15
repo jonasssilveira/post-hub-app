@@ -1,22 +1,17 @@
 package entity
 
-import (
-	"github.com/google/uuid"
-)
-
 type PostModeration struct {
-	PostModerationID uuid.UUID `json:"post_id"`
-	ModerationID     User      `json:"moderation_id"`
-	UserID           User      `json:"user_id"`
-	State            bool      `json:"state"`
+	PostModerationID uint64 `gorm:"primaryKey;autoIncrement"`
+	ModerationID     uint64 `json:"moderation_id"`
+	PostID           uint64 `json:"post_id"`
+	State            bool   `json:"state"`
 }
 
-func NewPostModeration(user, moderation User, state bool) *PostModeration {
+func NewPostModeration(user, moderation User, state bool, post Post) *PostModeration {
 	return &PostModeration{
-		PostModerationID: uuid.New(),
-		UserID:           user,
-		ModerationID:     moderation,
-		State:            state,
+		PostID:       post.PostID,
+		ModerationID: moderation.UserID,
+		State:        state,
 	}
 }
 
@@ -24,6 +19,6 @@ func (moderation *PostModeration) GetType() string {
 	return "post_moderation"
 }
 
-func (moderation *PostModeration) GetID() uuid.UUID {
+func (moderation *PostModeration) GetID() uint64 {
 	return moderation.PostModerationID
 }

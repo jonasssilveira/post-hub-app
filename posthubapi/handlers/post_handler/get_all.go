@@ -1,37 +1,37 @@
 package handlers
 
 import (
-	"PostHubApp/domain/use_case/entity"
 	"PostHubApp/domain/use_case/repository"
-	"PostHubApp/posthubapi/handlers/error_handler"
+	"PostHubApp/posthubapi/handlers/errorshandle"
 	"encoding/json"
 	"net/http"
 )
 
 type ApiGetAll struct {
-	db repository.DB[entity.Post]
+	db repository.DB
 }
 
-func NewApiGetAll(repo repository.DB[entity.Post]) *ApiGetAll {
+func NewApiGetAll(repo repository.DB) *ApiGetAll {
 	return &ApiGetAll{
 		db: repo,
 	}
 }
 
-func (api *ApiGetAll) Handler(w http.ResponseWriter, r *http.Request) {
+func (api *ApiGetAll) Handler(w http.ResponseWriter, r *http.Request) error {
 
-	post, err := json.Marshal(api.db.FindAll())
+	allPost, err := api.db.FindAll(r.Context(), nil)
+	if err != nil {
+		return err
+	}
+	post, err := json.Marshal(allPost)
 
 	if err != nil {
-		apiError := &error_handler.ApiError{
+		return errorshandler.ApiErrorNotFound{
 			Code:    http.StatusNotFound,
 			Message: "Resource not found",
 		}
-
-		http.Error(w, apiError.Message, apiError.Code)
-		return
 	}
 	w.WriteHeader(http.StatusOK)
 	w.Write(post)
-
+	return nil
 }
