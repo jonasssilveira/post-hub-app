@@ -5,7 +5,6 @@ type User struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 	FullName string `json:"full_name"`
-	Posts    []Post // Define a one-to-many relationship
 }
 
 func NewUser(email, password, fullname string) *User {

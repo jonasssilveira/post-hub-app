@@ -1,6 +1,7 @@
 package database
 
 import (
+	"PostHubApp/domain/use_case/dto"
 	"PostHubApp/domain/use_case/entity"
 	"PostHubApp/domain/use_case/repository"
 	"context"
@@ -51,9 +52,12 @@ func (em *EntityManager) FindAll(ctx context.Context, dbOptions ...*repository.D
 }
 
 func (em *EntityManager) Get(ctx context.Context, id uint64) (entity.Migrations, error) {
-	migratedFound := new(entity.Post)
+	migratedFound := dto.NewDTOPost()
 
-	err := em.db.WithContext(ctx).First(&migratedFound).Where("id = ?", id).Error
+	err := em.db.WithContext(ctx).Select("post.*, user.*"). // Select the columns you need
+								Joins("LEFT JOIN user ON post.user_id = user.user_id").
+								Where("post.post_id = ?", id).
+								Find(&migratedFound).Error
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
