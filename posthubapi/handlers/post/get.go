@@ -13,7 +13,7 @@ type ApiGet struct {
 	db repository.DB
 }
 
-func NewApiGet(repo repository.DB) *ApiGet {
+func NewApiGetPost(repo repository.DB) *ApiGet {
 	return &ApiGet{
 		db: repo,
 	}
@@ -23,7 +23,7 @@ func (api *ApiGet) Handler(c *gin.Context) error {
 
 	id, _ := strconv.ParseUint(c.Param("id"), 10, 32)
 
-	getPost, err := api.db.Get(c, id)
+	getPost, err := api.db.GetPost(c, id)
 
 	if err != nil {
 		return err
@@ -33,12 +33,12 @@ func (api *ApiGet) Handler(c *gin.Context) error {
 
 	if err != nil {
 		return &errorshandler.ApiErrorNotFound{
-			Code:    http.StatusNotFound,
+			Code:    http.StatusInternalServerError,
 			Message: "Resource not found",
 		}
 	}
 
-	c.Writer.WriteHeader(http.StatusCreated)
+	c.Writer.WriteHeader(http.StatusOK)
 	c.Writer.Write(post)
 	return nil
 }

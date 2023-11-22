@@ -4,19 +4,31 @@ import (
 	"PostHubApp/domain/use_case/entity"
 )
 
-type post struct {
+type PostDTO struct {
 	entity.Post `json:"post"`
 	entity.User `json:"user"`
+	comment     []entity.Comment `json:"comment"`
 }
 
-func NewDTOPost() *post {
-	return &post{}
+type Post struct {
+	Title        string `json:"title"`
+	Message      string `json:"message"`
+	UserID       uint64 `json:"user_id"`
+	ModerationID uint64 `json:"moderation_id"`
 }
 
-func (post post) GetType() string {
+func NewDTOPost() *PostDTO {
+	return &PostDTO{}
+}
+
+// TableName specifies the table name for the Post model
+func (PostDTO) TableName() string {
+	return "post" // Set the table name to match the actual table name in your database
+}
+func (post PostDTO) GetType() string {
 	return "post"
 }
 
-func (post post) GetID() uint64 {
+func (post PostDTO) GetID() uint64 {
 	return post.PostID
 }

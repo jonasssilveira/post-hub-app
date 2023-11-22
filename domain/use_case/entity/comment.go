@@ -1,15 +1,16 @@
 package entity
 
 type Comment struct {
-	CommentID uint64 `json:"comment_id" gorm:"primaryKey;autoIncrement:true"`
-	User      uint64 `json:"user" gorm:"foreignKey:UserID"`
-	Message   string `json:"message"`
-	PostID    uint   `json:"postID" gorm:"size:36"`
+	CommentID uint64 `gorm:"primaryKey;autoIncrement:true"`
+	UserID    uint64 `gorm:"foreignKey:user_id"`
+	Message   string
+	PostID    uint64 `gorm:"size:36"`
 }
 
-func NewComment(user User, message string) *Comment {
+func NewComment(user, post uint64, message string) *Comment {
 	return &Comment{
-		User:    user.UserID,
+		UserID:  user,
+		PostID:  post,
 		Message: message,
 	}
 }
@@ -20,4 +21,9 @@ func (comment *Comment) GetType() string {
 
 func (comment *Comment) GetID() uint64 {
 	return comment.CommentID
+}
+
+// TableName specifies the table name for the Post model
+func (Comment) TableName() string {
+	return "comment" // Set the table name to match the actual table name in your database
 }

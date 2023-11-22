@@ -4,6 +4,7 @@ import (
 	"PostHubApp/domain/use_case/repository"
 	"PostHubApp/posthubapi/handlers/errorshandle"
 	"encoding/json"
+	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
@@ -11,15 +12,15 @@ type ApiGetAll struct {
 	db repository.DB
 }
 
-func NewApiGetAll(repo repository.DB) *ApiGetAll {
+func NewApiGetAllPost(repo repository.DB) *ApiGetAll {
 	return &ApiGetAll{
 		db: repo,
 	}
 }
 
-func (api *ApiGetAll) Handler(w http.ResponseWriter, r *http.Request) error {
+func (api *ApiGetAll) Handler(c *gin.Context) error {
 
-	allPost, err := api.db.FindAll(r.Context(), nil)
+	allPost, err := api.db.FindAllPost(c, nil)
 	if err != nil {
 		return err
 	}
@@ -31,7 +32,7 @@ func (api *ApiGetAll) Handler(w http.ResponseWriter, r *http.Request) error {
 			Message: "Resource not found",
 		}
 	}
-	w.WriteHeader(http.StatusOK)
-	w.Write(post)
+	c.Writer.WriteHeader(http.StatusOK)
+	c.Writer.Write(post)
 	return nil
 }
