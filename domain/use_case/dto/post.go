@@ -5,8 +5,8 @@ import (
 )
 
 type post struct {
-	entity.Post
-	entity.User
+	entity.Post `json:"post"`
+	entity.User `json:"user"`
 }
 
 func NewDTOPost() *post {

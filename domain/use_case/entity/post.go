@@ -2,16 +2,18 @@ package entity
 
 type Post struct {
 	PostID       uint64 `gorm:"primaryKey;autoIncrement"`
-	Title        string `json:"title"`
-	Message      string `json:"message"`
-	UserID       uint64 `json:"user_id"`
-	ModerationID uint64 `json:"moderation_id"`
+	Title        string
+	Message      string
+	UserID       uint64
+	ModerationID *uint64
 }
 
-func NewPost(title, message string, user User) *Post {
+func NewPost(title, message string, user uint64) *Post {
 	return &Post{
-		Title:   title,
-		Message: message,
+		Title:        title,
+		Message:      message,
+		UserID:       user,
+		ModerationID: nil,
 	}
 }
 

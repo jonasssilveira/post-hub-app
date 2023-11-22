@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"PostHubApp/domain/use_case/entity"
+	"PostHubApp/domain/use_case/entity/dto"
 	"PostHubApp/domain/use_case/repository"
 	"PostHubApp/posthubapi/handlers/errorshandle"
 	"encoding/json"
@@ -32,16 +33,16 @@ func (api *ApiSave) Handler(c *gin.Context) error {
 
 		return apiError
 	}
-	var post *entity.Post
+	var postDTO dto.Post
 
-	if err = json.Unmarshal(readBody, post); err != nil {
+	if err = json.Unmarshal(readBody, &postDTO); err != nil {
 		apiError := &errorshandler.ApiErrorNotFound{
 			Code:    http.StatusNotFound,
 			Message: err.Error(),
 		}
 		return apiError
 	}
-
+	post := entity.NewPost(postDTO.Title, postDTO.Message, postDTO.UserID)
 	err = api.db.Merge(c, post)
 	if err != nil {
 		apiError := &errorshandler.ApiErrorNotFound{
