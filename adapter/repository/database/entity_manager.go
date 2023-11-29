@@ -1,9 +1,9 @@
 package database
 
 import (
-	"PostHubApp/domain/use_case/dto"
-	"PostHubApp/domain/use_case/entity"
-	"PostHubApp/domain/use_case/repository"
+	"PostHubApp/domain/dto"
+	entity "PostHubApp/domain/entity"
+	"PostHubApp/domain/repository"
 	"context"
 	"errors"
 	"gorm.io/gorm"
@@ -12,6 +12,11 @@ import (
 
 type EntityManager struct {
 	db *gorm.DB
+}
+
+func (em *EntityManager) GetModedationFromPost(ctx context.Context, id string) (entity.PostModeration, error) {
+	//TODO implement me
+	panic("implement me")
 }
 
 func NewEntityManager(db *gorm.DB) *EntityManager {
@@ -26,8 +31,10 @@ func (em *EntityManager) MergePost(ctx context.Context, post entity.Migrations) 
 		return err
 	}
 
-	if found.GetID() == 0 {
-		return em.db.Create(post).Error
+	if found.GetID() == "" {
+		d := em.db.Create(post)
+
+		return d.Error
 	} else {
 		return em.update(post, ctx)
 	}
@@ -42,7 +49,7 @@ func (em *EntityManager) MergeComment(ctx context.Context, comment entity.Migrat
 		return err
 	}
 
-	if found.PostID == 0 {
+	if found.PostID == "" {
 		return em.db.Create(comment).Error
 	} else {
 		return em.update(comment, ctx)
@@ -91,7 +98,7 @@ func (em *EntityManager) FindAllPost(ctx context.Context, dbOptions ...*reposito
 
 }
 
-func (em *EntityManager) GetPost(ctx context.Context, id uint64) (dto.PostDTO, error) {
+func (em *EntityManager) GetPost(ctx context.Context, id string) (dto.PostDTO, error) {
 	var migratedFound dto.PostDTO
 
 	err := em.db.WithContext(ctx).Select("post.*, user.*").
@@ -109,7 +116,7 @@ func (em *EntityManager) GetPost(ctx context.Context, id uint64) (dto.PostDTO, e
 
 	return migratedFound, nil
 }
-func (em *EntityManager) GetComment(ctx context.Context, id uint64) (entity.Comment, error) {
+func (em *EntityManager) GetComment(ctx context.Context, id string) (entity.Comment, error) {
 	var migratedFound entity.Comment
 
 	err := em.db.WithContext(ctx).Select("post.*, user.*, comment.*").

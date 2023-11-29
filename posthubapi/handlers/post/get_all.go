@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"PostHubApp/domain/use_case/repository"
+	"PostHubApp/domain/repository"
 	"PostHubApp/posthubapi/handlers/errorshandle"
 	"encoding/json"
 	"github.com/gin-gonic/gin"

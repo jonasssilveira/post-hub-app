@@ -1,20 +1,20 @@
 package dto
 
 import (
-	"PostHubApp/domain/use_case/entity"
+	entity2 "PostHubApp/domain/entity"
 )
 
 type PostDTO struct {
-	entity.Post `json:"post"`
-	entity.User `json:"user"`
-	comment     []entity.Comment `json:"comment"`
+	entity2.Post `json:"post"`
+	entity2.User `json:"user"`
+	comment      []entity2.Comment `json:"comment"`
 }
 
 type Post struct {
 	Title        string `json:"title"`
 	Message      string `json:"message"`
-	UserID       uint64 `json:"user_id"`
-	ModerationID uint64 `json:"moderation_id"`
+	UserID       string `json:"user_id"`
+	ModerationID string `json:"moderation_id"`
 }
 
 func NewDTOPost() *PostDTO {
@@ -29,6 +29,6 @@ func (post PostDTO) GetType() string {
 	return "post"
 }
 
-func (post PostDTO) GetID() uint64 {
+func (post PostDTO) GetID() string {
 	return post.PostID
 }

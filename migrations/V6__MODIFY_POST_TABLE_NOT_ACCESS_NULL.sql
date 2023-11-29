@@ -8,4 +8,4 @@ ALTER TABLE `post-hub-app`.post
 
 -- Modify user_id column to disallow null values
 ALTER TABLE `post-hub-app`.post
-    MODIFY user_id bigint unsigned NOT NULL;
+    MODIFY user_id varchar(36)  NOT NULL;

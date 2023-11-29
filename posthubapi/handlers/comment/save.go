@@ -1,9 +1,11 @@
 package handlers
 
 import (
-	"PostHubApp/domain/use_case/dto"
-	"PostHubApp/domain/use_case/entity"
-	"PostHubApp/domain/use_case/repository"
+	"PostHubApp/adapter/producer"
+	"PostHubApp/domain/dto"
+	"PostHubApp/domain/entity"
+	"PostHubApp/domain/repository"
+	"PostHubApp/domain/use_case"
 	"PostHubApp/posthubapi/handlers/errorshandle"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
@@ -43,8 +45,10 @@ func (api *ApiSave) Handler(c *gin.Context) error {
 		return apiError
 	}
 	comment := entity.NewComment(commentDTO.PostID, commentDTO.UserID, commentDTO.Message)
-	err = api.db.MergeComment(c, comment)
-	if err != nil {
+	messagingProducer := producer.NewProducer()
+	commentService := use_case.NewServicePost(api.db, messagingProducer)
+
+	if commentService.Comment(c, comment) != nil {
 		apiError := &errorshandler.ApiErrorNotFound{
 			Code:    http.StatusNotFound,
 			Message: "it was not possible save or update",

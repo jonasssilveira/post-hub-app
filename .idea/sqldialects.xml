@@ -2,5 +2,8 @@
 <project version="4">
   <component name="SqlDialectMappings">
     <file url="file://$PROJECT_DIR$/migrations/V1__CREATE_USER.sql" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/migrations/V2__CREATE_POST.sql" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/migrations/V3__CREATE_MODERATION.sql" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/migrations/V4__CREATE_COMMENT.sql" dialect="MySQL" />
   </component>
 </project>

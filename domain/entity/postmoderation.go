@@ -1,9 +1,9 @@
 package entity
 
 type PostModeration struct {
-	PostModerationID uint64 `gorm:"primaryKey;autoIncrement"`
-	ModerationID     uint64 `json:"moderation_id"`
-	PostID           uint64 `json:"post_id"`
+	PostModerationID string `gorm:"primaryKey;autoIncrement"`
+	ModerationID     string `json:"moderation_id"`
+	PostID           string `json:"post_id"`
 	State            bool   `json:"state"`
 }
 
@@ -19,6 +19,6 @@ func (moderation *PostModeration) GetType() string {
 	return "post_moderation"
 }
 
-func (moderation *PostModeration) GetID() uint64 {
+func (moderation *PostModeration) GetID() string {
 	return moderation.PostModerationID
 }

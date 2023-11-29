@@ -1,12 +1,11 @@
 package handlers
 
 import (
-	"PostHubApp/domain/use_case/repository"
+	"PostHubApp/domain/repository"
 	errorshandler "PostHubApp/posthubapi/handlers/errorshandle"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"strconv"
 )
 
 type ApiGet struct {
@@ -21,7 +20,7 @@ func NewApiGetPost(repo repository.DB) *ApiGet {
 
 func (api *ApiGet) Handler(c *gin.Context) error {
 
-	id, _ := strconv.ParseUint(c.Param("id"), 10, 32)
+	id := c.Param("id")
 
 	getPost, err := api.db.GetPost(c, id)
 

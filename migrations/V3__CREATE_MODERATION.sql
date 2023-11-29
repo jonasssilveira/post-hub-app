@@ -1,10 +1,10 @@
 create table if not exists `post-hub-app`.post_moderation
 (
-    post_moderation_id bigint unsigned auto_increment
+    post_moderation_id varchar(36) not null
         primary key,
-    moderation_id      bigint unsigned null,
-    post_id            bigint unsigned null,
-    state              boolean      null
+    moderation_id      varchar(36) null,
+    post_id            varchar(36) null,
+    state              boolean     null
 );
 
 alter table `post-hub-app`.post_moderation
